@@ -1,0 +1,75 @@
+# Маршрут Frontend-стажёра (сокращённый, для демонстрации разных команд).
+# Структура по мотивам чек-листа стажёра Авито; НЕ является регламентом Авито.
+id: frontend
+title: Маршрут Frontend-стажёра
+stages:
+  - id: start
+    title: Первые дни — знакомство
+    from_day: 1
+    to_day: 3
+    tasks:
+      - id: meet-mentor
+        title: Познакомься с наставником и договорись о регулярных 1:1
+        owner: intern
+        kind: manual
+        due_day: 1
+        doc: communication
+      - id: add-to-chats
+        title: Добавить стажёра в чаты и каналы команды
+        owner: mentor
+        kind: manual
+        due_day: 1
+      - id: goals-meeting
+        title: Встреча с руководителем — цели и ожидания
+        owner: lead
+        kind: manual
+        due_day: 3
+      - id: meet-team
+        title: Познакомься с командой
+        owner: intern
+        kind: manual
+        due_day: 3
+        depends_on: [add-to-chats]
+        doc: search-frontend-team
+  - id: week1
+    title: Неделя 1 — инструменты и доступы
+    from_day: 1
+    to_day: 7
+    tasks:
+      - id: access-standard
+        title: Запроси стандартные доступы (GitLab, Jira, Confluence, Sentry)
+        owner: intern
+        kind: access
+        systems: [gitlab, jira, confluence, sentry]
+        due_day: 2
+        doc: access-overview
+      - id: teach-sentry
+        title: Расскажи о Sentry
+        owner: intern
+        kind: teachback
+        topic: sentry
+        due_day: 5
+        doc: sentry
+      - id: design-system
+        title: Изучи дизайн-систему и компонентную библиотеку
+        owner: intern
+        kind: manual
+        due_day: 5
+        doc: search-frontend-team
+  - id: weeks2-4
+    title: Недели 2–4 — первые задачи
+    from_day: 8
+    to_day: 28
+    tasks:
+      - id: first-task
+        title: Возьми первую задачу и открой MR
+        owner: intern
+        kind: manual
+        due_day: 12
+        depends_on: [access-standard]
+      - id: data-protection
+        title: Изучи основы защиты данных
+        owner: intern
+        kind: manual
+        due_day: 28
+        doc: data-protection

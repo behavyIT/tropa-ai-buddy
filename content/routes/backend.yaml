@@ -1,0 +1,183 @@
+# Маршрут Backend-стажёра.
+# Источник структуры: чек-лист стажёра Авито (вкладки «Материалы для всех» и «Чек-лист Backend»).
+# Формулировки, сроки и зависимости адаптированы для прототипа и НЕ являются регламентом Авито.
+id: backend
+title: Маршрут Backend-стажёра
+stages:
+  - id: start
+    title: Первые дни — знакомство
+    from_day: 1
+    to_day: 3
+    tasks:
+      - id: meet-mentor
+        title: Познакомься с наставником и договорись о регулярных 1:1
+        owner: intern
+        kind: manual
+        due_day: 1
+        doc: communication
+        checklist_ref: "Работа с наставником"
+      - id: add-to-chats
+        title: Добавить стажёра в чаты и каналы команды
+        owner: mentor
+        kind: manual
+        due_day: 1
+        checklist_ref: "Организационные моменты, п.1"
+      - id: notes
+        title: Заведи конспект встреч с наставником
+        owner: intern
+        kind: manual
+        due_day: 2
+        checklist_ref: "Работа с наставником, п.3"
+      - id: goals-meeting
+        title: Встреча с руководителем — цели, ожидания и критерии успеха
+        owner: lead
+        kind: manual
+        due_day: 3
+        checklist_ref: "Организационные моменты, п.4"
+      - id: meet-team
+        title: Познакомься с командой
+        owner: intern
+        kind: manual
+        due_day: 3
+        depends_on: [add-to-chats]
+        doc: ads-backend-team
+        checklist_ref: "Познакомься с командой, с которой будешь работать"
+  - id: week1
+    title: Неделя 1 — инструменты и доступы
+    from_day: 1
+    to_day: 7
+    tasks:
+      - id: access-standard
+        title: Запроси стандартные доступы (GitLab, Jira, Confluence, Grafana, Sentry)
+        owner: intern
+        kind: access
+        systems: [gitlab, jira, confluence, grafana, sentry]
+        due_day: 2
+        doc: access-overview
+        checklist_ref: "Запроси доступ в пространство своего кластера и/или команды"
+      - id: access-k8s
+        title: Запроси доступ к k8s-staging для работы через LENS
+        owner: intern
+        kind: access
+        systems: [k8s-staging]
+        due_day: 4
+        doc: access-overview
+        checklist_ref: "Установи LENS для работы с kubernetes"
+      - id: avito-cli
+        title: Настрой avito-cli
+        owner: intern
+        kind: manual
+        due_day: 3
+        depends_on: [access-standard]
+        doc: ads-backend-tools
+        checklist_ref: "Настрой avito-cli"
+      - id: stash-keys
+        title: Добавь SSH-ключи в stash
+        owner: intern
+        kind: manual
+        due_day: 3
+        depends_on: [access-standard]
+        doc: ads-backend-tools
+        checklist_ref: "Добавь ключи в stash"
+      - id: tech-dep
+        title: Попроси добавить тебя в канал Tech-dep
+        owner: intern
+        kind: manual
+        due_day: 5
+        depends_on: [add-to-chats]
+        doc: communication
+        checklist_ref: "Попроси руководителя или наставника добавить тебя в канал Tech-dep"
+      - id: dev-principles
+        title: Изучи принципы разработки команды
+        owner: intern
+        kind: manual
+        due_day: 5
+        doc: dev-principles
+        checklist_ref: "Изучи принципы разработки Авито"
+      - id: teach-sentry
+        title: Расскажи о Sentry
+        owner: intern
+        kind: teachback
+        topic: sentry
+        due_day: 5
+        doc: sentry
+        checklist_ref: "Расскажи о Sentry"
+      - id: training
+        title: Прорешай задачи на учебной платформе
+        owner: intern
+        kind: manual
+        due_day: 7
+        depends_on: [avito-cli]
+        checklist_ref: "Прорешай задачи на учебной платформе"
+  - id: weeks2-4
+    title: Недели 2–4 — первые задачи
+    from_day: 8
+    to_day: 28
+    tasks:
+      - id: team-docs
+        title: Изучи документы и мануалы команды
+        owner: intern
+        kind: manual
+        due_day: 10
+        doc: ads-backend-tools
+        checklist_ref: "Изучи все необходимые документы и мануалы"
+      - id: tracker-goals
+        title: Внеси цели и ожидания в трекер прогресса
+        owner: intern
+        kind: manual
+        due_day: 10
+        depends_on: [goals-meeting]
+        checklist_ref: "Запроси у куратора инструмент для отслеживания прогресса стажёра"
+      - id: first-task
+        title: Возьми первую задачу (good-first-issue) и открой MR
+        owner: intern
+        kind: manual
+        due_day: 12
+        depends_on: [avito-cli, stash-keys, access-k8s]
+        doc: first-task
+      - id: teach-grafana
+        title: Расскажи о Grafana
+        owner: intern
+        kind: teachback
+        topic: grafana
+        due_day: 14
+        depends_on: [access-standard]
+        doc: grafana
+        checklist_ref: "Расскажи о Grafana"
+      - id: go-docs
+        title: Изучи Effective Go и документацию по Go
+        owner: intern
+        kind: manual
+        due_day: 14
+        checklist_ref: "Изучи Effective Go"
+      - id: data-protection
+        title: Изучи основы защиты данных
+        owner: intern
+        kind: manual
+        due_day: 28
+        doc: data-protection
+        checklist_ref: "Изучи основы защиты персональных данных и другие инструкции"
+  - id: months2-3
+    title: Месяцы 2–3 — самостоятельность
+    from_day: 29
+    to_day: 90
+    tasks:
+      - id: microservices
+        title: Пройди курс по микросервисной архитектуре
+        owner: intern
+        kind: manual
+        due_day: 30
+        checklist_ref: "Изучи микросервисную архитектуру"
+      - id: load-testing
+        title: Изучи документацию по нагрузочному тестированию
+        owner: intern
+        kind: manual
+        due_day: 45
+        checklist_ref: "Изучи документацию по нагрузочному тестированию"
+      - id: equator-prep
+        title: Подготовься к экваторной встрече
+        owner: intern
+        kind: manual
+        due_day: 85
+        doc: internship-review
+        checklist_ref: "Подготовься к экваторной встрече"

@@ -1,0 +1,7 @@
+.git
+**/node_modules
+coverage
+docs/media
+web/test-results
+web/playwright-report
+*.out

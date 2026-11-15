@@ -1,0 +1,32 @@
+# Командный пак (синтетические данные).
+id: search-frontend
+name: "Поиск: Frontend"
+route: frontend
+contacts:
+  - topic: Доступы и права
+    keywords: [доступ, прав, gitlab, jira, confluence, sentry]
+    person: u-lead-oleg
+    how: "Стандартные доступы выдаются автоматически. Остальное согласует Олег."
+  - topic: Отгул, отпуск, график
+    keywords: [отгул, отпуск, выходн, график, отсутств]
+    person: u-lead-oleg
+    how: "Отгул согласует руководитель в сервисе отсутствий."
+  - topic: Код, компоненты, дизайн-система
+    keywords: [ревью, review, mr, код, компонент, дизайн, react, typescript, задач]
+    person: u-mentor-ilya
+    how: "По коду и компонентам — наставнику Илье."
+  - topic: Стажировка, документы, экватор
+    keywords: [hr, документ, справк, практик, куратор, экватор, выпускн, стажировк]
+    person: u-hrbp-olga
+    how: "Организационные вопросы стажировки — HR BP Ольге."
+calendar:
+  - date: "2026-11-12"
+    time: "15:00"
+    title: Ревью дизайна поиска
+    importance: high
+    note: "Команда обсуждает макеты"
+  - date: "2026-11-19"
+    time: "12:00"
+    title: Демо команды
+    importance: high
+    note: "Показ результатов спринта"

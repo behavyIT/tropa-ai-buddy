@@ -1,0 +1,75 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  # Все автотесты + отчёты покрытия (как scripts/test-all.sh локально)
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres" --health-interval 3s --health-timeout 3s --health-retries 20
+    env:
+      TEST_DATABASE_URL: postgres://postgres:postgres@localhost:5432/tropa_test?sslmode=disable
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.26"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Create test database
+        run: PGPASSWORD=postgres psql -h localhost -U postgres -c "create database tropa_test"
+      - name: Build web UI
+        run: cd web && npm ci && npm run build
+      - name: go vet
+        run: go vet ./...
+      - name: Tests with coverage (Go + Web, threshold 80%)
+        run: sh scripts/test-all.sh
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage
+          path: coverage
+
+  # Ровно то, что сделает эксперт: docker compose up → интерфейс → тесты в контейнере
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: docker compose up (build + wait for healthchecks)
+        run: docker compose up -d --build --wait
+      - name: Readiness (DB, corporate MCP, Redis)
+        run: curl -fsS http://localhost:8080/readyz && echo
+      - name: Smoke — login and chat through the API
+        run: |
+          curl -fsS -c jar -H 'Content-Type: application/json' -d '{"login":"alex","password":"buddy2026"}' http://localhost:8080/api/auth/login
+          echo
+          curl -fsS -b jar -H 'Content-Type: application/json' -H 'X-Requested-With: tropa' -d '{"text":"Что мне делать дальше?"}' http://localhost:8080/api/chat | head -c 400
+          echo
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: E2E in Chrome against the running stand
+        run: cd web && npm ci && E2E_BASE_URL=http://localhost:8080 npx playwright test demo
+      - name: Tests inside Docker (docker compose --profile test)
+        run: docker compose --profile test run --rm --build tests
+      - name: Logs on failure
+        if: failure()
+        run: docker compose logs --no-color --tail 200
+      - name: Tear down
+        if: always()
+        run: docker compose --profile test down -v

@@ -1,0 +1,53 @@
+# Каталог систем для имитации сервиса доступов (синтетические данные, тестовые правила).
+# aliases: слово со * — совпадение по префиксу токена, без * — точное совпадение токена.
+# approval: auto — выдаётся сразу; lead — согласует руководитель; forbidden_for — роли, которым запрос недоступен.
+systems:
+  - id: gitlab
+    title: GitLab
+    level: developer
+    approval: auto
+    standard: true
+    aliases: [gitlab, гитлаб*, stash, репозитор*]
+  - id: jira
+    title: Jira
+    level: user
+    approval: auto
+    standard: true
+    aliases: [jira, джира, джиру, джире, джирой, трекер*]
+  - id: confluence
+    title: Confluence
+    level: user
+    approval: auto
+    standard: true
+    aliases: [confluence, конфлюенс*, конфлюэнс*, вики, wiki]
+  - id: grafana
+    title: Grafana
+    level: viewer
+    approval: auto
+    standard: true
+    aliases: [grafana, графан*]
+  - id: sentry
+    title: Sentry
+    level: member
+    approval: auto
+    standard: true
+    aliases: [sentry, сентри]
+  - id: k8s-staging
+    title: Kubernetes staging (LENS)
+    level: developer
+    approval: lead
+    standard: false
+    aliases: [k8s, k8s-staging, kubernetes, кубер*, lens, ленс, staging, стейдж*]
+  - id: kafka-ui
+    title: Kafka UI (staging)
+    level: read
+    approval: lead
+    standard: false
+    aliases: [kafka*, кафк*]
+  - id: prod-db
+    title: Production-базы данных
+    level: read
+    approval: lead
+    standard: false
+    forbidden_for: [intern]
+    aliases: [прод, прода, проде, проду, продом, продовый, продовой, продовую, продовые, продакшн*, продакшен*, production, prod, боев*]

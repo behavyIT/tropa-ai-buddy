@@ -1,0 +1,30 @@
+topic: grafana
+title: Grafana
+doc: grafana
+pass_ratio: 0.6
+prompt: "Расскажи своими словами: что такое Grafana, откуда она берёт данные и как ты будешь ей пользоваться, когда твой сервис окажется в проде. 4–6 предложений — достаточно."
+concepts:
+  - id: dashboards
+    label: Дашборды и панели
+    keywords: [дашборд, dashboard, панел, борд]
+    hint: "Grafana — это дашборды из панелей: каждая панель показывает одну метрику или срез."
+  - id: datasources
+    label: Источники данных (Prometheus и другие)
+    keywords: [источник, datasource, data source, prometheus, прометеус, метрик, clickhouse, postgres, база]
+    hint: "Grafana сама данные не хранит — она ходит в источники: Prometheus, ClickHouse, PostgreSQL и т.д."
+  - id: queries
+    label: Запросы к данным (PromQL и др.)
+    keywords: [запрос, query, promql, фильтр, агрегац, rate]
+    hint: "Каждая панель — это запрос к источнику, например PromQL-выражение с rate() и агрегацией."
+  - id: alerting
+    label: Алертинг по порогам
+    keywords: [алерт, alert, оповещ, уведомл, порог, threshold]
+    hint: "По метрикам настраивают алерты: при превышении порога команда получает оповещение."
+  - id: visualization
+    label: Визуализация — графики, тренды
+    keywords: [график, визуализ, graph, heatmap, тренд, кривая, гистограм]
+    hint: "Графики и тренды помогают увидеть деградацию: рост ошибок, латентности, нагрузки."
+  - id: timerange
+    label: Переменные и временной диапазон
+    keywords: [переменн, variable, период, временн, time range, диапазон, интервал]
+    hint: "Временной диапазон и переменные (сервис, окружение) позволяют быстро переключать срез."

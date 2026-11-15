@@ -1,0 +1,88 @@
+# Полный стенд: PostgreSQL + Redis + имитация корпоративных сервисов (MCP) + Тропа.
+#   docker compose up --build            → http://localhost:8080
+#   docker compose --profile test run --rm tests   → тесты и отчёты покрытия в ./coverage
+name: tropa
+
+x-app-env: &app-env
+  CORP_TOKEN: ${CORP_TOKEN:-local-corp-token}
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: tropa
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./deploy/initdb:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d tropa"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  redis:
+    image: redis:7-alpine
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  corp-mcp:
+    build: { context: ., target: runtime }
+    entrypoint: ["/usr/local/bin/corp-mcp"]
+    environment:
+      <<: *app-env
+      HTTP_ADDR: ":8090"
+      CORP_STATE_FILE: /data/corp-state.json
+      CORP_LATENCY: ${CORP_LATENCY:-350ms}
+    volumes:
+      - corpdata:/data
+    ports: ["8090:8090"]
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8090/healthz"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  tropa:
+    build: { context: ., target: runtime }
+    environment:
+      <<: *app-env
+      HTTP_ADDR: ":8080"
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/tropa?sslmode=disable
+      REDIS_URL: redis://redis:6379/0
+      CORP_MCP_URL: http://corp-mcp:8090/mcp
+      SESSION_SECRET: ${SESSION_SECRET:-change-me-in-production}
+      DEMO_MODE: ${DEMO_MODE:-true}
+      SIM_START: ${SIM_START:-2026-11-09T09:30:00+03:00}
+      LLM_PROVIDER: ${LLM_PROVIDER:-none}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      LLM_MODEL: ${LLM_MODEL:-claude-opus-5-5}
+      LLM_EFFORT: ${LLM_EFFORT:-low}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+    ports: ["8080:8080"]
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+      corp-mcp: { condition: service_healthy }
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080/healthz"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  tests:
+    profiles: ["test"]
+    build: { context: ., target: test }
+    environment:
+      TEST_DATABASE_URL: postgres://postgres:postgres@postgres:5432/tropa_test?sslmode=disable
+    volumes:
+      - ./coverage:/src/coverage
+    depends_on:
+      postgres: { condition: service_healthy }
+
+volumes:
+  pgdata:
+  corpdata:

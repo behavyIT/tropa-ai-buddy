@@ -1,0 +1,404 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Тропа — AI-buddy для стажёров</title>
+<style>
+  @page { size: 1280px 720px; margin: 0; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; color: #141414; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  a { color: #0067c5; text-decoration: none; }
+  .slide { width: 1280px; height: 720px; position: relative; overflow: hidden; padding: 46px 60px 50px; page-break-after: always; background: #fff; }
+  .slide:last-child { page-break-after: auto; }
+  h1 { font-size: 50px; line-height: 1.04; margin: 0; letter-spacing: -1.2px; font-weight: 800; }
+  h2 { font-size: 33px; line-height: 1.12; margin: 0 0 20px; letter-spacing: -0.6px; font-weight: 800; max-width: 1160px; }
+  h3 { font-size: 18px; margin: 0 0 8px; font-weight: 800; }
+  p, li { font-size: 17px; line-height: 1.38; }
+  ul, ol { margin: 0; padding-left: 22px; }
+  li { margin-bottom: 5px; }
+  .muted { color: #666; } .small { font-size: 14.5px; } .xs { font-size: 12.5px; }
+  .hl { padding: 0 8px; } .g { background: #00d05a; } .v { background: #965eeb; color: #fff; } .b { background: #00a8ff; color: #fff; } .r { background: #ff4053; color: #fff; }
+  .st { border-radius: 4px; padding: 15px 18px; box-shadow: 0 2px 4px rgba(0,0,0,.06), 0 8px 24px rgba(0,0,0,.06); }
+  .mint { background: #c9f9c0; } .sky { background: #c4e2ff; } .lilac { background: #e3d4f7; } .pink { background: #fbd0d6; } .soft { background: #f4f4f2; } .yellow { background: #fff2b8; }
+  .rot1 { transform: rotate(-0.8deg); } .rot2 { transform: rotate(0.7deg); }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+  .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .grid4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  .num { font-size: 72px; font-weight: 900; line-height: 1; letter-spacing: -2px; }
+  .kpi { font-size: 38px; font-weight: 900; letter-spacing: -1px; line-height: 1.05; }
+  .logo { font-size: 24px; font-weight: 900; }
+  .logo span { font-size: 12px; background: #965eeb; color: #fff; padding: 2px 8px; border-radius: 6px; margin-left: 8px; vertical-align: middle; }
+  .foot { position: absolute; left: 60px; right: 60px; bottom: 18px; display: flex; justify-content: space-between; font-size: 12px; color: #8a8a8a; }
+  .shot { border-radius: 10px; border: 1px solid #e3e3e3; box-shadow: 0 8px 30px rgba(0,0,0,.10); width: 100%; display: block; object-fit: cover; object-position: left top; }
+  table { border-collapse: collapse; width: 100%; font-size: 14.5px; }
+  th { text-align: left; color: #666; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; padding: 6px 8px; border-bottom: 2px solid #141414; }
+  td { padding: 7px 8px; border-bottom: 1px solid #e6e6e6; vertical-align: top; line-height: 1.32; }
+  code { font-family: Menlo, monospace; font-size: .85em; background: #f0f0f0; padding: 1px 5px; border-radius: 5px; }
+  .tag { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; color: #666; }
+  .msg-u { background: #141414; color: #fff; border-radius: 14px 14px 4px 14px; padding: 8px 12px; font-size: 14.5px; margin: 0 0 8px auto; width: fit-content; max-width: 92%; }
+  .msg-b { background: #fff; border: 1px solid #e3e3e3; border-radius: 14px 14px 14px 4px; padding: 8px 12px; font-size: 14.5px; margin: 0 0 12px; line-height: 1.35; }
+  .step { display: grid; grid-template-columns: 34px 1fr; gap: 10px; margin-bottom: 10px; }
+  .step b.n { width: 30px; height: 30px; border-radius: 50%; background: #141414; color: #fff; display: grid; place-items: center; font-size: 15px; }
+  .cell { display: flex; flex-direction: column; gap: 6px; }
+  .cell .lbl { font-size: 14px; font-weight: 800; }
+  .cell img { width: 100%; border: 1px solid #e3e3e3; border-radius: 8px; box-shadow: 0 4px 14px rgba(0,0,0,.08); }
+  .arrow { font-weight: 900; color: #999; }
+  .box { border: 1.5px solid #141414; border-radius: 10px; padding: 10px 12px; font-size: 13.5px; line-height: 1.35; background: #fff; }
+  .appx { position: absolute; top: 18px; right: 60px; font-size: 12px; font-weight: 800; color: #965eeb; letter-spacing: .08em; text-transform: uppercase; }
+</style>
+</head>
+<body>
+
+<!-- 1. Титул + как проверить -->
+<section class="slide">
+  <div class="logo">Тропа<span>AI-buddy</span></div>
+  <div style="display:grid; grid-template-columns: 1fr 520px; gap: 40px; margin-top: 30px">
+    <div>
+      <div class="muted" style="font-size:16px; font-weight:700">Кейс Avito Start · Hack&amp;Change 2026 · «AI-buddy: ИИ-наставник для стажёров»</div>
+      <h1 style="margin-top:14px">AI-buddy <span class="hl g">«Тропа»</span> ведёт стажёра по&nbsp;адаптации и&nbsp;снимает <span class="hl v">рутину</span> с&nbsp;наставника</h1>
+      <p style="margin-top:22px; font-size:19px">Маршрут из чек-листа Авито · ответы только из разрешённых материалов · заявки в корпоративных сервисах через MCP — только после подтверждения · вопрос наставнику один раз, ответ — навсегда</p>
+      <div class="grid3" style="margin-top:22px">
+        <div class="st mint"><div class="kpi">16/16</div><div class="small">ответов из верного источника</div></div>
+        <div class="st sky"><div class="kpi">10/10</div><div class="small">честных «не знаю» вне базы</div></div>
+        <div class="st lilac"><div class="kpi" style="font-size:31px">89 / 99,8%</div><div class="small">покрытие Go / Web</div></div>
+      </div>
+    </div>
+    <div>
+      <div class="st yellow" style="padding:18px 20px">
+        <h3 style="font-size:20px">Как проверить за 5 минут</h3>
+        <div class="step"><b class="n">1</b><div class="small"><code>git clone https://github.com/behavyIT/tropa-ai-buddy</code><br><code>cd tropa-ai-buddy &amp;&amp; docker compose up --build</code></div></div>
+        <div class="step"><b class="n">2</b><div class="small">Открыть <b>http://localhost:8080</b> → карточка «Алекс Новиков». Логины <code>alex</code> · <code>artem</code> · <code>maria</code> · <code>olga</code>, пароль <code>buddy2026</code></div></div>
+        <div class="step"><b class="n">3</b><div class="small">В чате: «Что мне делать дальше?» → «Оформи отгул на 13 ноября» → «Отправить заявку»</div></div>
+        <div class="step"><b class="n">4</b><div class="small">«Сменить» → Мария: «Согласования» и «Тропинки»; Артём: «Сводка вопросов»</div></div>
+        <div class="step" style="margin:0"><b class="n">5</b><div class="small">Тесты и покрытие: <code>docker compose --profile test run --rm tests</code></div></div>
+      </div>
+      <div class="st soft" style="margin-top:14px; font-size:14.5px; line-height:1.55">
+        <b>Репозиторий:</b> <a href="https://github.com/behavyIT/tropa-ai-buddy">github.com/behavyIT/tropa-ai-buddy</a><br>
+        <b>Видео (1:50):</b> <a href="https://github.com/behavyIT/tropa-ai-buddy/blob/main/docs/media/tropa-demo.mp4">docs/media/tropa-demo.mp4</a><br>
+        <b>Развёрнутого интерфейса нет:</b> стенд поднимается локально одной командой, внешние ключи не нужны
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>Прототип. Данные синтетические, инструкции тестовые — не регламенты Авито.</span><span>1</span></div>
+</section>
+
+<!-- 2. Проблема -->
+<section class="slide">
+  <h2>Наставник тратит 40–65 часов за стажировку, а стажёр теряется между сервисами и стесняется спрашивать</h2>
+  <div class="grid3">
+    <div class="st mint rot1"><div class="num">40–48 ч</div><p style="margin:6px 0 0">наставника за 6-месячную программу</p></div>
+    <div class="st sky rot2"><div class="num">55–65 ч</div><p style="margin:6px 0 0">за 9-месячную программу</p></div>
+    <div class="st pink rot1"><p style="font-size:19px; margin:0"><b>«Стажёру нужен отгул, но он не знает порядка и не уверен, стоит ли отвлекать руководителя»</b></p><p class="small muted" style="margin:6px 0 0">пример из кейса</p></div>
+  </div>
+  <div class="grid3" style="margin-top:30px">
+    <div><h3>Стажёру непросто</h3><ul class="small"><li>инструкции и доступы разбросаны по сервисам</li><li>непонятно, какой шаг следующий и что относится к нему</li><li>неловко «дёргать» наставника и руководителя</li></ul></div>
+    <div><h3>Наставник тратит время на рутину</h3><ul class="small"><li>одни и те же объяснения каждому стажёру</li><li>«Расскажи о Sentry» — выслушать каждого</li><li>напоминать про доступы, отгулы, чаты</li></ul></div>
+    <div><h3>Что нужно Авито</h3><ul class="small"><li>быстрее выход на самостоятельные задачи</li><li>меньше рутинных обращений к наставнику</li><li><b>не заменять</b> содержательную работу наставника</li></ul></div>
+  </div>
+  <div class="foot"><span>Источник цифр — оценка команды Авито из кейса</span><span>2</span></div>
+</section>
+
+<!-- 3. Решение vs очевидный вариант -->
+<section class="slide">
+  <h2>Тропа — не FAQ-бот: она знает маршрут стажёра, действует в сервисах после подтверждения и учится у наставника</h2>
+  <div style="display:grid; grid-template-columns: 1.55fr 1fr; gap: 26px">
+    <table>
+      <tr><th>Очевидный вариант: чат-бот по базе</th><th>Тропа</th></tr>
+      <tr><td>Отвечает, если спросили</td><td><b>Знает маршрут</b> из 22 пунктов чек-листа Авито с зависимостями и сама предлагает следующий шаг</td></tr>
+      <tr><td>Даёт ссылку на инструкцию</td><td><b>Выполняет действие</b> в сервисе (отгул, доступы, чек-лист) — только после клика «Подтвердить», с квитанцией</td></tr>
+      <tr><td>«Не знаю» — тупик</td><td><b>Передаёт вопрос наставнику</b> в сводку; его ответ сохраняется и отвечает следующим стажёрам</td></tr>
+      <tr><td>Пересказывает документацию</td><td><b>Слушает стажёра</b>: «Расскажи о Sentry» — проверка по рубрике и отметка в чек-листе</td></tr>
+      <tr><td>Видит всю базу</td><td><b>Видит только разрешённое</b> роли и команде — права применяются до поиска</td></tr>
+      <tr><td>Нужен ключ LLM</td><td><b>Работает без LLM</b>; с ключом Claude улучшает понимание и формулировки</td></tr>
+    </table>
+    <div>
+      <h3>Почему эти 5 сценариев</h3>
+      <div class="st mint" style="margin-bottom:10px; padding:10px 14px"><b>«Что дальше?»</b> <span class="small">— этапы, статусы и следующие шаги (задача 04 кейса)</span></div>
+      <div class="st sky" style="margin-bottom:10px; padding:10px 14px"><b>«Как оформить отгул?»</b> <span class="small">— пример из кейса, действие через сервис</span></div>
+      <div class="st lilac" style="margin-bottom:10px; padding:10px 14px"><b>Доступы</b> <span class="small">— первый блокер недели 1 по чек-листу, проверка прав</span></div>
+      <div class="st pink" style="margin-bottom:10px; padding:10px 14px"><b>Вопросы о команде</b> <span class="small">— задача 02 кейса + «спросить без неловкости»</span></div>
+      <div class="st yellow" style="padding:10px 14px"><b>«Расскажи мне»</b> <span class="small">— пункты чек-листа «Расскажи о Sentry / Grafana»</span></div>
+    </div>
+  </div>
+  <div class="foot"><span>Путь стажёра и выбор сценариев: docs/user-journey.md</span><span>3</span></div>
+</section>
+
+<!-- 4. Сквозной сценарий -->
+<section class="slide">
+  <h2>Отгул за 3 сообщения: от «стоит ли отвлекать руководителя?» до квитанции в сервисе отсутствий</h2>
+  <div style="display:grid; grid-template-columns: 1fr 1.05fr; gap: 26px">
+    <div>
+      <div class="msg-u">Как оформить отгул? Стоит ли отвлекать руководителя?</div>
+      <div class="msg-b">Порядок по тестовой инструкции <sup>[1]</sup>; согласует руководитель. <b>Писать лично не обязательно</b> — заявка сама придёт на согласование. Подсказки: «Оформи на 11 / 13 ноября».</div>
+      <div class="msg-u">Оформи отгул на 13 ноября</div>
+      <div class="msg-b">Проверила <b>календарь команды через MCP</b>: «Демо спринта в 16:00». Карточка плана: что уйдёт в сервис, кто согласует, кого уведомим, права.</div>
+      <div class="msg-u">[Отправить заявку]</div>
+      <div class="msg-b"><b>MCP</b> <code>absence_create_request</code> от имени стажёра с ключом идемпотентности → квитанция <b>ABS-00001</b>, «На согласовании». Мария согласует во вкладке «Согласования» → стажёр получает уведомление.</div>
+    </div>
+    <img class="shot" src="img/absence.png" style="height:540px; object-fit:contain; object-position:center top; background:#fff">
+  </div>
+  <div class="foot"><span>Действие выполнено = сервис вернул результат, Тропа показала и сохранила квитанцию (требование кейса)</span><span>4</span></div>
+</section>
+
+<!-- 5. Следующий шаг -->
+<section class="slide">
+  <h2>Тропа сама предлагает следующий шаг: утром, после каждого ответа и когда что-то разблокировалось</h2>
+  <div style="display:grid; grid-template-columns: 1.45fr 1fr; gap: 24px">
+    <img class="shot" src="img/intern.png" style="height:540px">
+    <div>
+      <div class="st mint" style="margin-bottom:12px"><b>Утром</b> <span class="small">— бриф ИИ-крона: план на день, просрочки, кого ждём</span></div>
+      <div class="st sky" style="margin-bottom:12px"><b>После каждого ответа</b> <span class="small">— 2–4 кнопки-подсказки по текущему шагу</span></div>
+      <div class="st lilac" style="margin-bottom:12px"><b>Почему этот шаг</b> <span class="small">— ранжирование по сроку, просрочке, «начато» и числу задач, которые шаг откроет; объяснение видно стажёру</span></div>
+      <div class="st pink" style="margin-bottom:12px"><b>Ждём человека</b> <span class="small">— «Пока ждёшь — сделай», а владельцу пункта Тропа напоминает сама: стажёру не нужно никого «дёргать»</span></div>
+      <div class="st yellow"><b>Доступ выдали</b> <span class="small">— пункт закрывается сам, зависимые разблокируются</span></div>
+    </div>
+  </div>
+  <div class="foot"><span>Три колонки: маршрут · чат · «сейчас» (следующий шаг, ожидания, квитанции)</span><span>5</span></div>
+</section>
+
+<!-- 6. Наставник -->
+<section class="slide">
+  <h2>Наставник тратит время только на то, что требует человека: вопросы сводкой, ответ один раз — навсегда</h2>
+  <div class="cell"><div class="lbl">1. Сводка вопросов вместо прерываний: похожие объединены, ответ можно сразу сохранить в базу команды</div><img src="img/mentor.png" style="height:175px; object-fit:contain; object-position:left top; background:#fff"></div>
+  <div style="display:grid; grid-template-columns: 1fr 1fr 0.95fr; gap: 18px; margin-top:14px">
+    <div class="cell"><div class="lbl">2. Следующему стажёру отвечает уже база</div><img src="img/answer.png" style="height:165px; object-fit:contain; object-position:left top; background:#fff">
+      <div class="st soft xs" style="margin-top:8px">Расчётная экономия наставнику (допущения в «Тропинках»): ответ без эскалации ≈ 7 мин, действие ≈ 10 мин, принятый teach-back ≈ 15 мин. Это гипотеза для пилота, а не измеренный результат.</div></div>
+    <div class="cell"><div class="lbl">3. «Расскажи о Sentry» принимает Тропа</div><img src="img/teachback.png" style="height:265px; object-fit:cover; object-position:left top"></div>
+    <ul class="small">
+      <li>Несрочные вопросы копятся в сводку, <b>похожие объединяются</b>, срочные приходят сразу</li>
+      <li>Наставник видит только отправленный вопрос, <b>не переписку</b></li>
+      <li>Ответ приходит стажёру в чат и <b>сохраняется в базу команды</b> (тест QA-05)</li>
+      <li>Пункты «Расскажи о …» проверяются по рубрике: раскрыто ✓, подсказки к упущенному, отметка в чек-листе</li>
+    </ul>
+  </div>
+  <div class="foot"><span>Вопрос наставнику отправляется тоже только после подтверждения стажёра</span><span>6</span></div>
+</section>
+
+<!-- 7. Нестандартные ситуации -->
+<section class="slide">
+  <h2>В нестандартных ситуациях Тропа уточняет, честно говорит «не знаю» и не выходит за права</h2>
+  <div class="grid3" style="row-gap:16px">
+    <div class="st soft"><div class="tag">Неполный запрос → уточняет</div><div class="msg-u" style="margin-top:8px">хочу отгул, оформи</div><div class="msg-b" style="margin:0">На какую дату оформить отгул? Напиши, например, «на пятницу» или «с 13 по 14 ноября».<br><span class="xs muted">[Оформи отгул на 11 ноября] [Оформи отгул на 13 ноября]</span></div></div>
+    <div class="st soft"><div class="tag">Нет в базе → «не нашёл» и наставник</div><div class="msg-u" style="margin-top:8px">Как настроить принтер на пятом этаже?</div><div class="msg-b" style="margin:0">Не нашёл ответа в материалах, доступных тебе — похоже, это вопрос для человека… Подготовил вопрос наставнику. Он увидит только этот вопрос, а не нашу переписку.<br><span class="xs muted">[Отправить вопрос] [Отменить]</span></div></div>
+    <div class="st soft"><div class="tag">Чувствительное → HR BP, без данных</div><div class="msg-u" style="margin-top:8px">Сколько получает Артём?</div><div class="msg-b" style="margin:0">Это чувствительная тема (зарплаты, здоровье, документы, финансы или личные данные коллег). С такими вопросами я не работаю. Лучше напрямую к HR BP: Ольга Петрова.</div></div>
+    <div class="st soft"><div class="tag">Нет прав → отказ ролью и альтернатива</div><div class="msg-u" style="margin-top:8px">Дай доступ к проду, хочу посмотреть данные</div><div class="msg-b" style="margin:0">Не могу запросить: Production-базы данных недоступны для роли «стажёр». Если нужны такие данные — обсуди с наставником: обычно хватает staging или обезличенной выгрузки <sup>[1]</sup>.</div></div>
+    <div class="st soft"><div class="tag">Сбой сервиса → «Не отправлено» и повтор</div><div class="msg-u" style="margin-top:8px">[Отправить заявки]</div><div class="msg-b" style="margin:0"><b style="color:#a3122a">Не отправлено.</b> Корпоративный сервис недоступен. Заявка не отправлена — можно повторить.<br><span class="xs muted">[Повторить] [Отменить] · интерфейс не блокируется</span></div></div>
+    <div class="box" style="font-size:14px"><b>Как Тропа понимает, что информации мало</b><br>1) права применяются <b>до</b> поиска;<br>2) лучший фрагмент должен набрать BM25 ≥ 2,0 и покрыть ≥ 34% значимых слов вопроса;<br>3) в LLM-режиме модель обязана вернуть «НЕТ_ОТВЕТА», если ответа нет в источниках.<br>На наборе: <b>10/10 честных «не знаю», 0 выдуманных ответов</b>.</div>
+  </div>
+  <div class="foot"><span>Тексты ответов — дословно из интерфейса · LLM недоступна или отказала → тот же ответ офлайн-логикой</span><span>7</span></div>
+</section>
+
+<!-- 8. Архитектура -->
+<section class="slide">
+  <h2>Решения принимает код, LLM только понимает и формулирует — поэтому права и действия надёжны</h2>
+  <div style="display:grid; grid-template-columns: 1.25fr 1fr; gap: 26px">
+    <div>
+      <div style="display:grid; grid-template-columns: 1fr 26px 1.25fr 26px 1fr; align-items:center; gap:6px">
+        <div class="box sky"><b>React 19 + TS</b><br>TanStack Query · Zustand · Zod — проверка каждого ответа API</div>
+        <div class="arrow">⇄</div>
+        <div class="box" style="border-color:#00a344"><b>tropa (Go 1.26)</b><br>оркестратор агента · офлайн-NLU · LLM-слой (опц.) · база знаний BM25 + права · маршрут · действия · сводка наставнику · ИИ-крон · аналитика</div>
+        <div class="arrow">⇄</div>
+        <div class="box lilac"><b>corp-mcp</b><br>MCP: отсутствия · доступы · чек-лист · календарь</div>
+      </div>
+      <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; margin-top:12px">
+        <div class="box soft"><b>PostgreSQL 16</b> — состояние, квитанции, события</div>
+        <div class="box soft"><b>Redis 7</b> — лимиты, лидер ИИ-крона</div>
+        <div class="box soft"><b>Claude</b> <code>claude-opus-5-5</code> — по ключу, structured outputs</div>
+      </div>
+      <h3 style="margin-top:18px">Почему так</h3>
+      <ul class="small">
+        <li><b>Права — в коде:</b> недоступный документ не попадает ни в поиск, ни в промпт модели</li>
+        <li><b>План → подтверждение → квитанция:</b> агент никогда не меняет данные сам; повтор не создаёт дубль</li>
+        <li><b>MCP + делегированная идентичность:</b> сервис сам проверяет права пользователя; в проде меняется только адрес коннектора</li>
+        <li><b>Офлайн по умолчанию:</b> сбой или отказ модели ухудшает формулировку, а не ломает продукт</li>
+      </ul>
+    </div>
+    <table>
+      <tr><th>Есть в Авито</th><th>Как используется</th></tr>
+      <tr><td>Go, PostgreSQL, Redis</td><td>pgx, go-redis</td></tr>
+      <tr><td>React, TS, TanStack, Zustand, Zod</td><td>весь интерфейс</td></tr>
+      <tr><td>Авторизация, роли, данные сотрудников</td><td>тонкие адаптеры-имитации → SSO и API оргструктуры</td></tr>
+      <tr><td>ИИ-агенты + MCP</td><td>корпоративные сервисы — MCP-инструменты</td></tr>
+      <tr><td>ИИ-крон</td><td>бриф, напоминания, синхронизация статусов</td></tr>
+      <tr><td>Feature flags</td><td>сценарии по командам, A/B-запуск</td></tr>
+      <tr><td>Clickstream / Kafka</td><td>события в совместимом формате</td></tr>
+      <tr><td>Grafana, Docker, CI/CD</td><td><code>/metrics</code>, Compose, GitHub Actions</td></tr>
+    </table>
+  </div>
+  <div class="foot"><span>Подробно: docs/architecture.md</span><span>8</span></div>
+</section>
+
+<!-- 9. Технические решения -->
+<section class="slide">
+  <h2>Каждый технический выбор подтверждён замером или осознанным отказом от альтернативы</h2>
+  <table style="font-size:13.8px">
+    <tr><th style="width:30%">Что пробовали</th><th style="width:40%">Что получили</th><th>Что выбрали</th></tr>
+    <tr><td>BM25 + бонус своей команде ×1,3</td><td>12/16 ответов из верного источника: «Что такое Sentry?» цитировал раздел про отгул; профильный документ проигрывал общему</td><td>стоп-слова, бонус команде ×1,15, бонус «документ про это» (доля IDF слов вопроса в заголовке) → <b>16/16</b></td></tr>
+    <tr><td>Шаблон «что делать» → «что дальше»</td><td>«Что делать, если долго нет ревью?» уходило в маршрут</td><td>исключение для «если / когда / чтобы» → <b>49/49 интентов</b></td></tr>
+    <tr><td>Поиск систем подстрокой</td><td>«продукт» распознавался как «прод» — отказ в доступе к production</td><td>точное совпадение слова, префикс — только явно</td></tr>
+    <tr><td>e2e-прогон смены пользователя</td><td>после выхода интерфейс оставался у прежнего пользователя</td><td>сброс кэша при выходе + тест UI-13</td></tr>
+  </table>
+  <table style="font-size:13.8px; margin-top:18px">
+    <tr><th style="width:30%">Рассматривали и не взяли</th><th style="width:40%">Почему</th><th>Вместо этого</th></tr>
+    <tr><td>Свободный LLM-агент с вызовом инструментов</td><td>для HR-действий нельзя гарантировать права и воспроизводимость</td><td>детерминированный оркестратор, LLM — языковой слой</td></tr>
+    <tr><td>Векторный поиск</td><td>нужны модель эмбеддингов и ключ, хуже объяснимость; корпус маленький</td><td>BM25 + права; гибридный поиск — в развитии</td></tr>
+    <tr><td>Обязательная LLM</td><td>эксперты без ключа не смогли бы проверить решение</td><td>офлайн-режим по умолчанию, Claude — опция</td></tr>
+    <tr><td>Отдельные приложения для наставника и руководителя</td><td>кейс их не требует, а поддержка дороже</td><td>вкладки в том же интерфейсе по роли</td></tr>
+  </table>
+  <div class="foot"><span>Все замеры воспроизводятся: docs/eval/README.md</span><span>9</span></div>
+</section>
+
+<!-- 10. Качество -->
+<section class="slide">
+  <h2>Качество подтверждено замерами: 16/16 ответов по источнику, 10/10 честных «не знаю», отклик меньше 1 мс</h2>
+  <div class="grid4">
+    <div class="st mint"><div class="kpi">49/49</div><div class="small">формулировок стажёра — верный интент (офлайн)</div></div>
+    <div class="st sky"><div class="kpi">16/16</div><div class="small">вопросов из базы — ответ из верного источника</div></div>
+    <div class="st lilac"><div class="kpi">10/10</div><div class="small">вопросов вне базы — «не нашёл», 0 выдуманных ответов</div></div>
+    <div class="st pink"><div class="kpi">&lt; 1 мс</div><div class="small">p95 отклика API на локальные операции (порог кейса — 1 с)</div></div>
+    <div class="st yellow"><div class="kpi">89,0%</div><div class="small">покрытие Go (весь прикладной код)</div></div>
+    <div class="st soft"><div class="kpi">99,8%</div><div class="small">покрытие Web, Vitest</div></div>
+    <div class="st mint"><div class="kpi">105</div><div class="small">сценариев спецификаций — у каждого есть автотест</div></div>
+    <div class="st sky"><div class="kpi">93 + 48 + e2e</div><div class="small">тестов Go и Web, сквозной прогон в Chrome</div></div>
+  </div>
+  <div class="grid2" style="margin-top:22px">
+    <ul class="small">
+      <li>Интеграционные тесты на реальном PostgreSQL: права, exactly-once, сбой сервиса, согласования</li>
+      <li>LLM-путь проверен на эмуляторе Claude API: понимание, ответ, оценка teach-back и откат при сбое</li>
+      <li>Тест трассируемости роняет сборку, если у сценария спецификации нет теста</li>
+    </ul>
+    <div class="st soft small"><b>Честно о границах:</b> золотые наборы использовались и при настройке — это регрессионные, а не слепые тесты. Отклик измерен на Apple M4 в офлайн-режиме; ответ модели в LLM-режиме добавит секунды, поэтому чат не блокирует интерфейс.</div>
+  </div>
+  <div class="foot"><span>Отчёты: coverage/summary.md · docs/eval · openspec/TRACEABILITY.md · GitHub Actions</span><span>10</span></div>
+</section>
+
+<!-- 11. Ценность и метрики -->
+<section class="slide">
+  <h2>Эффект для стажёров и наставников — пока гипотеза; измерим его за одну когорту поэтапным запуском</h2>
+  <div style="display:grid; grid-template-columns: 1.3fr 1fr; gap: 24px">
+    <table>
+      <tr><th>Метрика</th><th>Сейчас</th><th>Цель пилота</th><th>Как считаем</th></tr>
+      <tr><td><b>Дни до первого принятого MR</b> (North Star)</td><td>замерить на контроле</td><td>↓ 20%</td><td>трекер задач</td></tr>
+      <tr><td>Часы наставника за программу</td><td>40–48 ч (кейс)</td><td>≤ 32 ч</td><td>дневник + события</td></tr>
+      <tr><td>Рутинные обращения к наставнику в неделю</td><td>замерить</td><td>−40%</td><td>вопросы в сводке</td></tr>
+      <tr><td>Ответы без эскалации</td><td>—</td><td>≥ 70%</td><td>события ответов</td></tr>
+      <tr><td>Медиана ожидания доступов</td><td>замерить</td><td>&lt; 8 ч</td><td>сервис доступов</td></tr>
+      <tr><td>👍 среди оценённых ответов</td><td>—</td><td>≥ 80%</td><td>кнопки 👍/👎</td></tr>
+      <tr><td>Утечки по правам</td><td>0 в тестах</td><td><b>0</b></td><td>аудит событий</td></tr>
+    </table>
+    <div>
+      <div class="st sky rot2"><h3>Как проверим</h3><p class="small" style="margin:0"><b>Поэтапный запуск по командам</b> через фича-флаги: команды без Тропы — контрольная группа. Малые когорты → сравнение медиан, бутстреп-интервалы. Метрики фиксируем до старта, раз в неделю короткий опрос стажёров, дневник времени наставника.</p></div>
+      <div class="st mint rot1" style="margin-top:16px"><h3>Уже собираем данные</h3><p class="small" style="margin:0">События в формате Clickstream → вкладка «Тропинки»: ответы без эскалации, действия, объединённые вопросы, пробелы базы знаний, места застревания. Тексты переписки в аналитику не попадают.</p></div>
+    </div>
+  </div>
+  <div class="foot"><span>Подробно: docs/metrics.md</span><span>11</span></div>
+</section>
+
+<!-- 12. Ограничения и развитие -->
+<section class="slide">
+  <h2>Прототип закрывает 5 сценариев целиком; до прода — подключить реальные сервисы и SSO и пройти пилот</h2>
+  <div class="grid3">
+    <div class="st mint"><h3>Готово</h3><ul class="small"><li>5 сценариев от запроса до результата</li><li>права ролей и команд, отказ по чувствительным темам</li><li>10 MCP-инструментов с контрактами</li><li>ИИ-крон, «Тропинки», фича-флаги</li><li>офлайн-режим и LLM-слой с откатом</li><li>Docker Compose, CI, тесты, видео</li></ul></div>
+    <div class="st pink"><h3>Пока нет — честно</h3><ul class="small"><li>реальные сервисы Авито — сейчас имитации по MCP</li><li>SSO — сейчас демо-вход тестовыми персонами</li><li>живой прогон с ключом Claude — проверено на эмуляторе API</li><li>развёрнутый стенд — только локальный запуск</li><li>эффект на стажёрах не измерялся</li><li>только русский язык, золотые наборы не слепые</li></ul></div>
+    <div class="st sky"><h3>Следующие шаги</h3><ul class="small"><li><b>Месяц 1:</b> MCP-коннекторы платформы ИИ-агентов, SSO, пилот на 2–3 командах</li><li><b>Месяцы 2–3:</b> мессенджер-бот, гибридный поиск, правки командного пака из «Тропинок»</li><li><b>Дальше:</b> Тропа для всех новичков; после онбординга — точка входа для рабочих вопросов</li></ul></div>
+  </div>
+  <div style="margin-top:30px">
+    <h1 style="font-size:40px">Тропа: <span class="hl g">стажёр быстрее</span> становится самостоятельным, <span class="hl v">наставник</span> занимается важным</h1>
+  </div>
+  <div class="foot"><span>Дальше — приложения: права, MCP-контракты, «Тропинки», запуск и документация</span><span>12</span></div>
+</section>
+
+<!-- A1. Права -->
+<section class="slide">
+  <div class="appx">Приложение A</div>
+  <h2>Права проверяет код на каждом шаге — ни модель, ни ошибка агента не дадут лишнего</h2>
+  <div class="grid2">
+    <ul class="small">
+      <li><b>Права до поиска:</b> недоступный документ не участвует в ранжировании и не попадает в промпт</li>
+      <li><b>План → подтверждение:</b> изменения — только по явному клику владельца</li>
+      <li><b>Делегированная идентичность:</b> сервис сам проверяет права (нельзя согласовать свою заявку)</li>
+      <li><b>Exactly-once:</b> атомарный переход статуса + ключ идемпотентности</li>
+      <li><b>Чувствительные темы</b> (зарплаты, здоровье, документы) → HR BP, без данных</li>
+      <li><b>Приватность:</b> чат виден только стажёру; в аналитике — только нормализованные термины</li>
+      <li>HttpOnly SameSite-cookie, CSRF-заголовок, CSP, rate limit (вход 10/мин, чат 30/мин), bcrypt</li>
+    </ul>
+    <table>
+      <tr><th></th><th>Стажёр</th><th>Наставник</th><th>Руков.</th><th>HR BP</th></tr>
+      <tr><td>Маршрут</td><td>свой</td><td>подопечных</td><td>команды</td><td>всех</td></tr>
+      <tr><td>Согласование</td><td>✖</td><td>✖</td><td>команды</td><td>✖</td></tr>
+      <tr><td>Сводка вопросов</td><td>✖</td><td>свои</td><td>команды</td><td>✖</td></tr>
+      <tr><td>«Тропинки»</td><td>✖</td><td>✖</td><td>команда</td><td>все</td></tr>
+      <tr><td>Документы для наставников</td><td>✖</td><td>✔</td><td>✔</td><td>✔</td></tr>
+      <tr><td>Production-базы</td><td>запрещено ролью</td><td>соглас.</td><td>соглас.</td><td>—</td></tr>
+    </table>
+  </div>
+  <div class="foot"><span>Каждое правило покрыто тестами: QA-02/03, SEC-01…08, MCP-05, ACT-02 · docs/security.md</span><span>13</span></div>
+</section>
+
+<!-- A2. MCP -->
+<section class="slide">
+  <div class="appx">Приложение B</div>
+  <h2>Корпоративные сервисы подключены как 10 MCP-инструментов — в проде меняется только адрес коннектора</h2>
+  <table>
+    <tr><th>Инструмент</th><th>Сервис</th><th>Только чтение</th><th>Кто может (по делегированной идентичности)</th></tr>
+    <tr><td><code>absence_create_request</code></td><td>Отсутствия</td><td>нет — через подтверждение</td><td>только за себя</td></tr>
+    <tr><td><code>absence_get_request</code> / <code>absence_decide</code></td><td>Отсутствия</td><td>да / нет</td><td>владелец, согласующий, HR BP / руководитель команды</td></tr>
+    <tr><td><code>calendar_team_events</code></td><td>Календарь</td><td>да</td><td>участник команды; отсутствие коллег — только числом</td></tr>
+    <tr><td><code>access_catalog</code></td><td>Доступы</td><td>да</td><td>все</td></tr>
+    <tr><td><code>access_create_request</code></td><td>Доступы</td><td>нет — через подтверждение</td><td>только за себя, с учётом роли</td></tr>
+    <tr><td><code>access_get_request</code> / <code>access_decide</code></td><td>Доступы</td><td>да / нет</td><td>владелец, согласующий / руководитель команды</td></tr>
+    <tr><td><code>checklist_complete_item</code> / <code>checklist_get</code></td><td>Чек-лист новичка</td><td>нет / да</td><td>стажёр, его наставник и руководитель</td></tr>
+  </table>
+  <p class="small" style="margin-top:16px">Протокол MCP 2025-06-18: <code>initialize</code>, <code>tools/list</code> с аннотацией <code>readOnlyHint</code>, <code>tools/call</code>. Клиент: таймауты, повтор только транспортных ошибок (безопасно благодаря ключам идемпотентности), circuit breaker. В одном процессе — тот же протокол без сети.</p>
+  <div class="foot"><span>Контракты: openspec/specs/corporate-mcp/spec.md</span><span>14</span></div>
+</section>
+
+<!-- A3. Тропинки -->
+<section class="slide">
+  <div class="appx">Приложение C</div>
+  <h2>«Тропинки» показывают руководителю, где стажёры реально застревают и чего не хватает в базе знаний</h2>
+  <div style="display:grid; grid-template-columns: 1.5fr 1fr; gap: 24px">
+    <img class="shot" src="img/insights.png" style="height:520px">
+    <ul class="small">
+      <li>Чек-лист — это плановые дорожки, а «тропинки» — где люди ходят на самом деле</li>
+      <li>«Горячие» шаги: вопросы, ожидания, просрочки — и совет, что поправить</li>
+      <li>Пробелы базы знаний; закрытые ответом наставника помечаются автоматически</li>
+      <li>Согласования отгулов и доступов в один клик, фича-флаги сценариев для команды</li>
+      <li>В демо добавлена синтетическая прошлая когорта (помечена), чтобы дашборд был показателен с первого дня</li>
+    </ul>
+  </div>
+  <div class="foot"><span>Вкладки руководителя: Согласования · Команда · Вопросы · Тропинки · Флаги · Чат</span><span>15</span></div>
+</section>
+
+<!-- A4. Запуск и документация -->
+<section class="slide">
+  <div class="appx">Приложение D</div>
+  <h2>Всё воспроизводится одной командой: запуск, тесты, замеры и видео</h2>
+  <div class="grid2">
+    <table>
+      <tr><th>Что</th><th>Команда</th></tr>
+      <tr><td>Поднять стенд</td><td><code>docker compose up --build</code> → localhost:8080</td></tr>
+      <tr><td>Тесты и покрытие</td><td><code>docker compose --profile test run --rm tests</code></td></tr>
+      <tr><td>Без Docker</td><td><code>go run ./cmd/tropa</code> (PostgreSQL в <code>DATABASE_URL</code>)</td></tr>
+      <tr><td>Замеры качества</td><td><code>EVAL_REPORT=1 go test ./internal/nlu ./internal/app -run EVAL</code></td></tr>
+      <tr><td>E2E и видео</td><td><code>make e2e</code> · <code>make video</code></td></tr>
+      <tr><td>С LLM</td><td><code>LLM_PROVIDER=anthropic ANTHROPIC_API_KEY=…</code></td></tr>
+    </table>
+    <table>
+      <tr><th>Документ</th><th>Где</th></tr>
+      <tr><td>Инструкция, тестовые данные, порядок проверки</td><td>README.md</td></tr>
+      <tr><td>SDD-спецификации (OpenSpec)</td><td>openspec/specs, TRACEABILITY.md</td></tr>
+      <tr><td>Отчёт о покрытии</td><td>coverage/summary.md, go.html, web/</td></tr>
+      <tr><td>Замеры качества</td><td>docs/eval</td></tr>
+      <tr><td>Архитектура · безопасность · метрики</td><td>docs/architecture.md · security.md · metrics.md</td></tr>
+      <tr><td>Путь стажёра · сценарий демо</td><td>docs/user-journey.md · demo-script.md</td></tr>
+      <tr><td>Видео · презентация</td><td>docs/media · docs/presentation</td></tr>
+    </table>
+  </div>
+  <div class="st soft small" style="margin-top:20px">Репозиторий: <a href="https://github.com/behavyIT/tropa-ai-buddy">github.com/behavyIT/tropa-ai-buddy</a> · проверка в GitHub Actions: сборка Docker-образов, запуск стенда, тесты с покрытием, сквозной прогон в браузере.</div>
+  <div class="foot"><span>Тропа · AI-buddy</span><span>16</span></div>
+</section>
+
+</body>
+</html>
