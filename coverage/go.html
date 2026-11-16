@@ -67,7 +67,7 @@
 				
 				<option value="file5">tropa/internal/agent/teachback.go (81.4%)</option>
 				
-				<option value="file6">tropa/internal/app/app.go (89.6%)</option>
+				<option value="file6">tropa/internal/app/app.go (89.7%)</option>
 				
 				<option value="file7">tropa/internal/app/config.go (100.0%)</option>
 				
@@ -83,7 +83,7 @@
 				
 				<option value="file13">tropa/internal/corp/corp.go (100.0%)</option>
 				
-				<option value="file14">tropa/internal/corpmock/corpmock.go (94.9%)</option>
+				<option value="file14">tropa/internal/corpmock/corpmock.go (94.6%)</option>
 				
 				<option value="file15">tropa/internal/corpmock/util.go (100.0%)</option>
 				
@@ -105,11 +105,11 @@
 				
 				<option value="file24">tropa/internal/llm/prompts.go (94.7%)</option>
 				
-				<option value="file25">tropa/internal/mcp/client.go (96.2%)</option>
+				<option value="file25">tropa/internal/mcp/client.go (96.3%)</option>
 				
 				<option value="file26">tropa/internal/mcp/mcp.go (100.0%)</option>
 				
-				<option value="file27">tropa/internal/mcp/server.go (95.8%)</option>
+				<option value="file27">tropa/internal/mcp/server.go (95.9%)</option>
 				
 				<option value="file28">tropa/internal/mcp/transport.go (100.0%)</option>
 				
@@ -2259,6 +2259,10 @@ func New(ctx context.Context, cfg Config, st *store.Store, log *slog.Logger) (*A
                 a.MCP = mcp.NewClient(cfg.CorpMCPURL, cfg.CorpToken, 15*time.Second)
                 a.Admin = corp.NewHTTPAdmin(cfg.CorpMCPURL, cfg.CorpToken)
         }</span>
+        <span class="cov8" title="1">if cfg.DemoMode </span><span class="cov8" title="1">{
+                // the time machine must also apply to corporate services running as separate processes
+                a.MCP.DemoNow = a.Clock.Now
+        }</span>
         <span class="cov8" title="1">corpSvc := &amp;corp.Client{MCP: a.MCP}
 
         // rate limiting / cron leader lock
@@ -3416,7 +3420,7 @@ type Mock struct {
 // New creates the mock and registers its MCP tools.
 func New(dir *directory.Directory, cat *catalog.Catalog, token string, now func() time.Time) *Mock <span class="cov8" title="1">{
         if now == nil </span><span class="cov8" title="1">{
-                now = func() time.Time </span><span class="cov8" title="1">{ return time.Now().In(clock.MSK) }</span>
+                now = func() time.Time </span><span class="cov0" title="0">{ return time.Now().In(clock.MSK) }</span>
         }
         <span class="cov8" title="1">m := &amp;Mock{st: newState(), dir: dir, cat: cat, now: now}
         m.Server = mcp.NewServer("avito-corp-services-mock", "1.0.0", token)
@@ -3486,6 +3490,14 @@ func (m *Mock) save() <span class="cov8" title="1">{
         b, _ := json.Marshal(m.st)
         m.mu.Unlock()
         _ = os.WriteFile(m.StatePath, b, 0o600)</span>
+}
+
+// at returns the caller's simulated time when provided (demo stand), else the mock's clock.
+func (m *Mock) at(cc mcp.CallContext) time.Time <span class="cov8" title="1">{
+        if !cc.DemoNow.IsZero() </span><span class="cov8" title="1">{
+                return cc.DemoNow.In(clock.MSK)
+        }</span>
+        <span class="cov8" title="1">return m.now()</span>
 }
 
 func (m *Mock) nextID(prefix string) string <span class="cov8" title="1">{
@@ -3586,7 +3598,7 @@ func (m *Mock) absenceCreate(_ context.Context, cc mcp.CallContext, raw json.Raw
         <span class="cov8" title="1">if to.Sub(from) &gt; 2*24*time.Hour </span><span class="cov8" title="1">{
                 return nil, mcp.Errorf("too_long", "отгул оформляется максимум на 3 дня подряд (тестовое правило)")
         }</span>
-        <span class="cov8" title="1">if from.Before(clock.StartOfDay(m.now())) </span><span class="cov8" title="1">{
+        <span class="cov8" title="1">if from.Before(clock.StartOfDay(m.at(cc))) </span><span class="cov8" title="1">{
                 return nil, mcp.Errorf("in_past", "нельзя оформить отгул задним числом")
         }</span>
         <span class="cov8" title="1">m.mu.Lock()
@@ -3597,7 +3609,7 @@ func (m *Mock) absenceCreate(_ context.Context, cc mcp.CallContext, raw json.Raw
         }</span>
         <span class="cov8" title="1">lead, _ := m.dir.LeadOf(emp.TeamID)
         r := &amp;corp.AbsenceRequest{RequestID: m.nextID("ABS"), EmployeeID: emp.ID, Type: a.Type, DateFrom: a.DateFrom, DateTo: a.DateTo, Comment: a.Comment,
-                Status: "pending_approval", CreatedAt: m.now().Format(time.RFC3339)}
+                Status: "pending_approval", CreatedAt: m.at(cc).Format(time.RFC3339)}
         if lead != nil </span><span class="cov8" title="1">{
                 r.ApproverID, r.ApproverName = lead.ID, lead.Name
         }</span>
@@ -3758,7 +3770,7 @@ func (m *Mock) accessCreate(_ context.Context, cc mcp.CallContext, raw json.RawM
                 m.mu.Unlock()
                 return r, nil
         }</span>
-        <span class="cov8" title="1">r := &amp;corp.AccessRequest{RequestID: m.nextID("ACC"), EmployeeID: emp.ID, System: sys.ID, Level: sys.Level, CreatedAt: m.now().Format(time.RFC3339)}
+        <span class="cov8" title="1">r := &amp;corp.AccessRequest{RequestID: m.nextID("ACC"), EmployeeID: emp.ID, System: sys.ID, Level: sys.Level, CreatedAt: m.at(cc).Format(time.RFC3339)}
         if sys.Approval == "auto" </span><span class="cov8" title="1">{
                 r.Status = "granted"
         }</span> else<span class="cov8" title="1"> {
@@ -3849,7 +3861,7 @@ func (m *Mock) checklistComplete(_ context.Context, cc mcp.CallContext, raw json
         }</span>
         <span class="cov8" title="1">it, ok := items[a.ItemID]
         if !ok || it.Status != "done" </span><span class="cov8" title="1">{
-                it = &amp;corp.ChecklistItem{EmployeeID: emp.ID, ItemID: a.ItemID, Status: "done", Evidence: a.Evidence, CompletedBy: cc.OnBehalfOf, CompletedAt: m.now().Format(time.RFC3339)}
+                it = &amp;corp.ChecklistItem{EmployeeID: emp.ID, ItemID: a.ItemID, Status: "done", Evidence: a.Evidence, CompletedBy: cc.OnBehalfOf, CompletedAt: m.at(cc).Format(time.RFC3339)}
                 items[a.ItemID] = it
         }</span>
         <span class="cov8" title="1">out := *it
@@ -6006,6 +6018,8 @@ type Client struct {
         Threshold   int
         Cooldown    time.Duration
         now         func() time.Time
+        // DemoNow, when set, sends the simulated time with every call (demo stands).
+        DemoNow func() time.Time
 }
 
 // NewClient creates a client.
@@ -6093,7 +6107,10 @@ func (c *Client) once(ctx context.Context, onBehalfOf, method string, params any
                 req.Header.Set("X-On-Behalf-Of", onBehalfOf)
         }</span>
         <span class="cov8" title="1">req.Header.Set("X-Request-Id", fmt.Sprintf("tropa-%d", id))
-        resp, err := c.HTTP.Do(req)
+        if c.DemoNow != nil </span><span class="cov8" title="1">{
+                req.Header.Set(DemoNowHeader, c.DemoNow().Format(time.RFC3339Nano))
+        }</span>
+        <span class="cov8" title="1">resp, err := c.HTTP.Do(req)
         if err != nil </span><span class="cov8" title="1">{
                 return nil, transientError{err}
         }</span>
@@ -6291,12 +6308,19 @@ import (
         "io"
         "net/http"
         "sort"
+        "time"
 )
+
+// DemoNowHeader carries the simulated "now" of a demo stand, so that services
+// running as separate processes share the buddy's time machine.
+const DemoNowHeader = "X-Demo-Now"
 
 // CallContext carries the delegated identity of the end user.
 type CallContext struct {
         OnBehalfOf string
         RequestID  string
+        // DemoNow is the caller's simulated time (zero when not provided).
+        DemoNow time.Time
 }
 
 // Handler executes a tool.
@@ -6363,7 +6387,10 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) <span class="
                 return
         }</span>
         <span class="cov8" title="1">cc := CallContext{OnBehalfOf: r.Header.Get("X-On-Behalf-Of"), RequestID: r.Header.Get("X-Request-Id")}
-        var result any
+        if t, err := time.Parse(time.RFC3339Nano, r.Header.Get(DemoNowHeader)); err == nil </span><span class="cov8" title="1">{
+                cc.DemoNow = t
+        }</span>
+        <span class="cov8" title="1">var result any
         var rpcErr error
         if s.Before != nil </span><span class="cov8" title="1">{
                 if err := s.Before(r.Context()); err != nil </span><span class="cov8" title="1">{

@@ -8,12 +8,19 @@ import (
 	"io"
 	"net/http"
 	"sort"
+	"time"
 )
+
+// DemoNowHeader carries the simulated "now" of a demo stand, so that services
+// running as separate processes share the buddy's time machine.
+const DemoNowHeader = "X-Demo-Now"
 
 // CallContext carries the delegated identity of the end user.
 type CallContext struct {
 	OnBehalfOf string
 	RequestID  string
+	// DemoNow is the caller's simulated time (zero when not provided).
+	DemoNow time.Time
 }
 
 // Handler executes a tool.
@@ -80,6 +87,9 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	cc := CallContext{OnBehalfOf: r.Header.Get("X-On-Behalf-Of"), RequestID: r.Header.Get("X-Request-Id")}
+	if t, err := time.Parse(time.RFC3339Nano, r.Header.Get(DemoNowHeader)); err == nil {
+		cc.DemoNow = t
+	}
 	var result any
 	var rpcErr error
 	if s.Before != nil {

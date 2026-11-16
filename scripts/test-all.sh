@@ -16,7 +16,7 @@ echo "Go line coverage: ${GO_TOTAL}%"
 echo "== Web: vitest + coverage (v8)"
 (cd web && npx vitest run --coverage)
 # отчёт без абсолютных путей машины, на которой запускали тесты
-sed -i.bak "s#$(pwd)/web/#web/#g" coverage/web/coverage-summary.json && rm -f coverage/web/coverage-summary.json.bak
+sed -i.bak 's#"/[^"]*/web/src/#"web/src/#g' coverage/web/coverage-summary.json && rm -f coverage/web/coverage-summary.json.bak
 
 awk -v t="$GO_TOTAL" 'BEGIN { if (t+0 < 80) { print "Go coverage below 80%"; exit 1 } }'
 echo "OK: all tests passed, reports in ./coverage (go.html, go-func.txt, web/index.html)"

@@ -18,13 +18,13 @@
 | `tropa/cmd/tropa` | 53.8% | 7/13 |
 | `tropa/internal/actions` | 83.6% | 357/427 |
 | `tropa/internal/agent` | 85.0% | 499/587 |
-| `tropa/internal/app` | 91.2% | 145/159 |
+| `tropa/internal/app` | 91.3% | 147/161 |
 | `tropa/internal/apperr` | 90.9% | 10/11 |
 | `tropa/internal/auth` | 85.3% | 29/34 |
 | `tropa/internal/catalog` | 98.4% | 123/125 |
 | `tropa/internal/clock` | 100.0% | 32/32 |
 | `tropa/internal/corp` | 96.3% | 26/27 |
-| `tropa/internal/corpmock` | 94.9% | 296/312 |
+| `tropa/internal/corpmock` | 94.6% | 298/315 |
 | `tropa/internal/cron` | 90.4% | 75/83 |
 | `tropa/internal/directory` | 92.3% | 36/39 |
 | `tropa/internal/flags` | 81.8% | 27/33 |
@@ -32,7 +32,7 @@
 | `tropa/internal/insights` | 84.1% | 138/164 |
 | `tropa/internal/kb` | 97.1% | 100/103 |
 | `tropa/internal/llm` | 93.3% | 70/75 |
-| `tropa/internal/mcp` | 96.2% | 179/186 |
+| `tropa/internal/mcp` | 96.3% | 183/190 |
 | `tropa/internal/mentor` | 84.4% | 65/77 |
 | `tropa/internal/nlu` | 98.2% | 109/111 |
 | `tropa/internal/notify` | 72.7% | 8/11 |

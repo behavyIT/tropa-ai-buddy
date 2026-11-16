@@ -13,7 +13,7 @@
 | SDD-спецификации | [`openspec/specs`](openspec/specs) · [трассируемость спек → тестов](openspec/TRACEABILITY.md) |
 | Тесты и отчёт о покрытии (> 80%) | Go **89,0%**, Web **99,8%** — [coverage/summary.md](coverage/summary.md), [go.html](coverage/go.html), [web/index.html](coverage/web/index.html) |
 | Замеры качества | [docs/eval](docs/eval/README.md): 49/49 интентов, 16/16 ответов из верного источника, 10/10 честных «не знаю», отклик < 1 мс |
-| 📹 Видеодемонстрация (1:50) | [`docs/media/tropa-demo.mp4`](docs/media/tropa-demo.mp4) — путь от запроса до результата |
+| 📹 Видеодемонстрация (1:50) | [▶ смотреть в браузере](https://cdn.jsdelivr.net/gh/behavyIT/tropa-ai-buddy@main/docs/media/tropa-demo.mp4) · файл [`docs/media/tropa-demo.mp4`](docs/media/tropa-demo.mp4) — путь от запроса до результата |
 | 📊 Продуктовая презентация (PDF) | [`docs/presentation/Tropa-AI-buddy.pdf`](docs/presentation/Tropa-AI-buddy.pdf) |
 
 Все данные синтетические, все инструкции — **тестовые и не являются регламентами Авито**.

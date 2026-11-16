@@ -122,6 +122,14 @@ func (m *Mock) save() {
 	_ = os.WriteFile(m.StatePath, b, 0o600)
 }
 
+// at returns the caller's simulated time when provided (demo stand), else the mock's clock.
+func (m *Mock) at(cc mcp.CallContext) time.Time {
+	if !cc.DemoNow.IsZero() {
+		return cc.DemoNow.In(clock.MSK)
+	}
+	return m.now()
+}
+
 func (m *Mock) nextID(prefix string) string {
 	m.st.Seq++
 	return fmt.Sprintf("%s-%05d", prefix, m.st.Seq)
@@ -220,7 +228,7 @@ func (m *Mock) absenceCreate(_ context.Context, cc mcp.CallContext, raw json.Raw
 	if to.Sub(from) > 2*24*time.Hour {
 		return nil, mcp.Errorf("too_long", "отгул оформляется максимум на 3 дня подряд (тестовое правило)")
 	}
-	if from.Before(clock.StartOfDay(m.now())) {
+	if from.Before(clock.StartOfDay(m.at(cc))) {
 		return nil, mcp.Errorf("in_past", "нельзя оформить отгул задним числом")
 	}
 	m.mu.Lock()
@@ -231,7 +239,7 @@ func (m *Mock) absenceCreate(_ context.Context, cc mcp.CallContext, raw json.Raw
 	}
 	lead, _ := m.dir.LeadOf(emp.TeamID)
 	r := &corp.AbsenceRequest{RequestID: m.nextID("ABS"), EmployeeID: emp.ID, Type: a.Type, DateFrom: a.DateFrom, DateTo: a.DateTo, Comment: a.Comment,
-		Status: "pending_approval", CreatedAt: m.now().Format(time.RFC3339)}
+		Status: "pending_approval", CreatedAt: m.at(cc).Format(time.RFC3339)}
 	if lead != nil {
 		r.ApproverID, r.ApproverName = lead.ID, lead.Name
 	}
@@ -392,7 +400,7 @@ func (m *Mock) accessCreate(_ context.Context, cc mcp.CallContext, raw json.RawM
 		m.mu.Unlock()
 		return r, nil
 	}
-	r := &corp.AccessRequest{RequestID: m.nextID("ACC"), EmployeeID: emp.ID, System: sys.ID, Level: sys.Level, CreatedAt: m.now().Format(time.RFC3339)}
+	r := &corp.AccessRequest{RequestID: m.nextID("ACC"), EmployeeID: emp.ID, System: sys.ID, Level: sys.Level, CreatedAt: m.at(cc).Format(time.RFC3339)}
 	if sys.Approval == "auto" {
 		r.Status = "granted"
 	} else {
@@ -483,7 +491,7 @@ func (m *Mock) checklistComplete(_ context.Context, cc mcp.CallContext, raw json
 	}
 	it, ok := items[a.ItemID]
 	if !ok || it.Status != "done" {
-		it = &corp.ChecklistItem{EmployeeID: emp.ID, ItemID: a.ItemID, Status: "done", Evidence: a.Evidence, CompletedBy: cc.OnBehalfOf, CompletedAt: m.now().Format(time.RFC3339)}
+		it = &corp.ChecklistItem{EmployeeID: emp.ID, ItemID: a.ItemID, Status: "done", Evidence: a.Evidence, CompletedBy: cc.OnBehalfOf, CompletedAt: m.at(cc).Format(time.RFC3339)}
 		items[a.ItemID] = it
 	}
 	out := *it

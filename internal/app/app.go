@@ -102,6 +102,10 @@ func New(ctx context.Context, cfg Config, st *store.Store, log *slog.Logger) (*A
 		a.MCP = mcp.NewClient(cfg.CorpMCPURL, cfg.CorpToken, 15*time.Second)
 		a.Admin = corp.NewHTTPAdmin(cfg.CorpMCPURL, cfg.CorpToken)
 	}
+	if cfg.DemoMode {
+		// the time machine must also apply to corporate services running as separate processes
+		a.MCP.DemoNow = a.Clock.Now
+	}
 	corpSvc := &corp.Client{MCP: a.MCP}
 
 	// rate limiting / cron leader lock

@@ -33,6 +33,8 @@ type Client struct {
 	Threshold   int
 	Cooldown    time.Duration
 	now         func() time.Time
+	// DemoNow, when set, sends the simulated time with every call (demo stands).
+	DemoNow func() time.Time
 }
 
 // NewClient creates a client.
@@ -120,6 +122,9 @@ func (c *Client) once(ctx context.Context, onBehalfOf, method string, params any
 		req.Header.Set("X-On-Behalf-Of", onBehalfOf)
 	}
 	req.Header.Set("X-Request-Id", fmt.Sprintf("tropa-%d", id))
+	if c.DemoNow != nil {
+		req.Header.Set(DemoNowHeader, c.DemoNow().Format(time.RFC3339Nano))
+	}
 	resp, err := c.HTTP.Do(req)
 	if err != nil {
 		return nil, transientError{err}

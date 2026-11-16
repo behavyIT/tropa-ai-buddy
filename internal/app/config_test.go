@@ -61,11 +61,19 @@ func TestAPP03_ExternalCorpAndRedis(t *testing.T) {
 	mr := miniredis.RunT(t)
 	h := newHarness(t, func(c *app.Config) {
 		c.CorpMCPURL, c.CorpToken, c.RedisURL = corpSrv.URL+"/mcp", "ext", "redis://"+mr.Addr()
+		// a simulated start far in the past: without a shared demo clock the external
+		// service (real wall clock) would reject the 13 Nov day off as "in the past"
+		c.SimStart = time.Date(2020, 11, 9, 9, 30, 0, 0, time.FixedZone("MSK", 3*3600))
 	})
 	alex := h.login("alex")
 	a := alex.chat("Запроси стандартные доступы").action(t)
 	if d := alex.confirm(a.ID); d.ExternalStatus != "granted" {
 		t.Fatalf("external corp: %+v", d)
+	}
+	// the external service must follow the demo time machine, not its own wall clock
+	ab := alex.chat("Оформи отгул на 13 ноября").action(t)
+	if d := alex.confirm(ab.ID); d.ExternalStatus != "pending_approval" {
+		t.Fatalf("external corp must accept a date that is in the future of the simulated clock: %+v", d)
 	}
 	if code := alex.post("/api/demo/corp-fault", map[string]bool{"enabled": true}, &map[string]any{}); code != 200 || !mock.Fault() {
 		t.Fatalf("remote fault: %d", code)
