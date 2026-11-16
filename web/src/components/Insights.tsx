@@ -1,7 +1,6 @@
 import { useInsights } from '../api/hooks'
+import { ruNumber as num } from '../lib/format'
 import { ErrorBox, Progress, Spinner } from './ui'
-
-const num = (v: number) => v.toLocaleString('ru-RU', { maximumFractionDigits: 1 })
 
 /** «Тропинки» — desire paths: where interns really get stuck vs. the planned route. */
 export function Insights() {

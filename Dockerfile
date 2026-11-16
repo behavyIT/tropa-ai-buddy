@@ -21,7 +21,8 @@ RUN go build -ldflags="-s -w" -o /out/tropa ./cmd/tropa \
 
 # ---------- 3. Test runner (docker compose --profile test) ----------
 FROM go AS test
-RUN apk add --no-cache nodejs npm
+# icu-data-full: русская локаль для Intl в тестах (по умолчанию в Alpine только en)
+RUN apk add --no-cache nodejs npm icu-data-full
 COPY --from=web /src/web/node_modules ./web/node_modules
 CMD ["sh", "scripts/test-all.sh"]
 

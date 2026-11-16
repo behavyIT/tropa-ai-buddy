@@ -7366,11 +7366,11 @@ func (e *Engine) Build(ctx context.Context, viewer, intern *directory.Person, no
                 return View{}, err
         }</span>
         <span class="cov8" title="1">states, err := e.st.TaskStates(ctx, intern.ID)
-        if err != nil </span><span class="cov8" title="1">{
+        if err != nil </span><span class="cov0" title="0">{
                 return View{}, err
         }</span>
         <span class="cov8" title="1">access, err := e.st.AccessStates(ctx, intern.ID)
-        if err != nil </span><span class="cov0" title="0">{
+        if err != nil </span><span class="cov8" title="1">{
                 return View{}, err
         }</span>
         <span class="cov8" title="1">day := clock.DayOfInternship(intern.StartDate, now)
@@ -7821,7 +7821,7 @@ func (s *Store) SaveClock(ctx context.Context, base, setAt time.Time) error <spa
 // TaskStates returns persisted task states of a user keyed by task id.
 func (s *Store) TaskStates(ctx context.Context, userID string) (map[string]domain.TaskState, error) <span class="cov8" title="1">{
         rows, err := s.pool.Query(ctx, `select user_id, task_id, status, updated_at, done_at from task_states where user_id=$1`, userID)
-        if err != nil </span><span class="cov8" title="1">{
+        if err != nil </span><span class="cov0" title="0">{
                 return nil, err
         }</span>
         <span class="cov8" title="1">defer rows.Close()
@@ -7854,7 +7854,7 @@ func (s *Store) SetTaskStatus(ctx context.Context, userID, taskID, status string
 // AccessStates returns a user's mirrored access states keyed by system.
 func (s *Store) AccessStates(ctx context.Context, userID string) (map[string]domain.AccessState, error) <span class="cov8" title="1">{
         rows, err := s.pool.Query(ctx, `select user_id, system, status, request_id, action_id, updated_at from user_access where user_id=$1`, userID)
-        if err != nil </span><span class="cov0" title="0">{
+        if err != nil </span><span class="cov8" title="1">{
                 return nil, err
         }</span>
         <span class="cov8" title="1">defer rows.Close()

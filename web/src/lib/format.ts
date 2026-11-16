@@ -61,7 +61,16 @@ export function timeAgo(iso: string, now: Date = new Date(Date.now() + clockOffs
   if (sec < 60) return 'только что'
   if (sec < 3600) return `${Math.floor(sec / 60)} мин назад`
   if (sec < 86400) return `${Math.floor(sec / 3600)} ч назад`
-  return d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' })
+  // no Intl dependency: some runtimes (e.g. Alpine Node) ship without Russian ICU data
+  return `${d.getDate()} ${monthsGen[d.getMonth()]}`
+}
+
+const monthsGen = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря']
+
+/** Russian decimal format without Intl: 1.25 → "1,3", 33 → "33". */
+export function ruNumber(v: number, digits = 1): string {
+  const s = v.toFixed(digits).replace(/\.0+$/, '')
+  return s.replace('.', ',')
 }
 
 export function hhmm(iso: string): string {

@@ -1,4 +1,4 @@
-import { actionStatus, expandSlash, hhmm, setServerNow, timeAgo } from './format'
+import { actionStatus, expandSlash, hhmm, ruNumber, setServerNow, timeAgo } from './format'
 import { action } from '../test/fixtures'
 import type { Action } from '../api/schemas'
 
@@ -27,6 +27,13 @@ describe('format', () => {
     expect(timeAgo('2020-01-01T00:00:00Z')).toBe('только что')
     setServerNow('not a date')
     setServerNow(new Date().toISOString())
+  })
+
+  it('formats Russian numbers without Intl', () => {
+    expect(ruNumber(33.333)).toBe('33,3')
+    expect(ruNumber(1.25)).toBe('1,3')
+    expect(ruNumber(33)).toBe('33')
+    expect(ruNumber(0.04)).toBe('0')
   })
 
   it('expands slash commands', () => {

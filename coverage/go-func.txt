@@ -341,9 +341,9 @@ tropa/internal/store/store.go:98:		Truncate			100.0%
 tropa/internal/store/store.go:103:		toJSON				100.0%
 tropa/internal/store/store.go:114:		LoadClock			100.0%
 tropa/internal/store/store.go:123:		SaveClock			100.0%
-tropa/internal/store/store.go:132:		TaskStates			90.9%
+tropa/internal/store/store.go:132:		TaskStates			81.8%
 tropa/internal/store/store.go:150:		SetTaskStatus			100.0%
-tropa/internal/store/store.go:165:		AccessStates			81.8%
+tropa/internal/store/store.go:165:		AccessStates			90.9%
 tropa/internal/store/store.go:183:		UpsertAccess			100.0%
 tropa/internal/store/store.go:194:		scanAction			91.7%
 tropa/internal/store/store.go:213:		InsertAction			80.0%
